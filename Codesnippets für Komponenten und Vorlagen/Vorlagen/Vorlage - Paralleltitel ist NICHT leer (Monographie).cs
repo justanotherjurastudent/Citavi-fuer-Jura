@@ -1,0 +1,28 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using SwissAcademic.Citavi;
+using SwissAcademic.Citavi.Metadata;
+using SwissAcademic.Collections;
+
+namespace SwissAcademic.Citavi.Citations
+{
+	public class CustomTemplateCondition
+		:
+		ITemplateConditionMacro
+	{
+		//Feld Paralleltitel in Monographie ist nicht leer
+		public bool IsTemplateForReference(ConditionalTemplate template, Citation citation)
+		{
+			if (citation == null) return false;
+			if (citation.Reference == null) return false;
+			
+			if (citation.Reference.ReferenceType == ReferenceType.Book)
+			{
+				return !string.IsNullOrWhiteSpace(citation.Reference.ParallelTitle);
+			}
+			
+			return false;
+		}
+	}
+}	
