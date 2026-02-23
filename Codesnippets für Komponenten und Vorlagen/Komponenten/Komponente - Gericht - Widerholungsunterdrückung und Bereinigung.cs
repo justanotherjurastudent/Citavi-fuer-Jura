@@ -198,13 +198,9 @@ namespace SwissAcademic.Citavi.Citations
 			// Entfernung aller Punkte
 			text = text.Replace(".", "");
 			
-			// Entfernung aller Klammern
-			text = text.Replace("(", "");
-			text = text.Replace(")", "");
-			text = text.Replace("[", "");
-			text = text.Replace("]", "");
-			
 			// Entfernung der Wörter "Kammer" und "Senat" (mit Wortgrenzen)
+			text = Regex.Replace(text, @"\bGroße Kammer\b", "", RegexOptions.IgnoreCase);
+			text = Regex.Replace(text, @"\bGroßer Senat\b", "", RegexOptions.IgnoreCase);
 			text = Regex.Replace(text, @"\bKammer\b", "", RegexOptions.IgnoreCase);
 			text = Regex.Replace(text, @"\bSenat\b", "", RegexOptions.IgnoreCase);
 			
