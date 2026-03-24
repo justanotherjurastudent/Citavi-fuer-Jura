@@ -77,6 +77,15 @@ kannst du mich gerne unter der E-Mail-Adresse auf meinem Blog erreichen.
 - Untertitel und Titelzusätze werden nun durch einen Punkt vom Titel getrennt.
 - Bei Gerichtsurteilen wird nun auch „Große Kammer“ oder „Großer Senat“ vom Gerichtsnamen bei der Ausgabe bereinigt.
 
+---
+
+### Version 2.2.2
+- Herausgeber und Begründer in einer Fußnote zu einem Beitrag / einer Kommentierung werden nun nur noch bis zu maximal zwei Personen angegeben, danach wird ab der ersten Person mit u. a. abgekürzt. Nur die Nachnamen werden hier ausgegeben und Gruppensuffixe wie (Hrsg.) und (Begr.) fallen weg.
+- Spiegelbildlich wird diese Nachweisangabe auch in der Zitierangabe der Sammelwerke im Literaturverzeichnis ausgegeben.
+- Wiederholungsausgabe von Autoren bei unterschiedlichen Werken mit ders., dies. etc. wurde vereinheitlich. Diese Wiederholungsausgabe kann - genauso wie die Wiederholungsausgabe mit Ebd. - per Aktivieren von Option 1 deaktiviert werden, sodass wieder normal der Autor erscheint.
+- Zwei Vorlagen wurden für Gesetzeskommentar im Set Literaturverzeichnis hinzugefügt, um mehr Fälle mit Loseblatt und Begründerwerke abzudecken.
+- Vorlage im Set Literaturverzeichnis von Internetdokument wurde entfernt, wo eine DOI statt Internetadresse ausgegeben wurde. Grund: Fehlende einheitliche Benutzung der DOI in anderen Dokumententypen.
+
 
 > [!TIP]
 > Für die detaillierte Anleitung zur Benutzung meines Zitierstils [besuche meinen Blog](https://blogs.urz.uni-halle.de/simpletricks/2022/10/der-citavi-stil-fuer-jura/).
