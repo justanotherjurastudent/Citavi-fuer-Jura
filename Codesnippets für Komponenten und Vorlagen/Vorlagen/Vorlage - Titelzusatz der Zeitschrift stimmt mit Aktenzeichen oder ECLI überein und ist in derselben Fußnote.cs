@@ -31,7 +31,7 @@ namespace SwissAcademic.Citavi.Citations
 			if (thisReference == null) return false;
 			if (previousReference == null) return false;
 
-			//Bestehende Logik bewusst beibehalten: Titelzusatz muss beiden Feldern entsprechen
+			//Referenz muss dasselbe Aktenzeichen haben
 			string titleSupplement = thisReference.TitleSupplement;
 			string specificField2 = previousReference.SpecificField2;
 			string specificField4 = previousReference.SpecificField4;
