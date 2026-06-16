@@ -1,5 +1,5 @@
 // #C5_43236
-//Version 1.0
+//Version 1.1
 
 using System.Linq;
 using System.Collections.Generic;
@@ -18,10 +18,11 @@ namespace SwissAcademic.Citavi.Citations
 			if (citation == null) return false;
 			if (citation.Reference == null) return false;
 			if (citation.Reference.ParentReference == null) return false;
-			
+			if (citation.Reference.ParentReference.ParallelTitle == null) return false;
+
 			string parentParallelTitle = citation.Reference.ParentReference.ParallelTitle.ToUpperInvariant();
-			
-			return (parentParallelTitle.StartsWith("FS") || parentParallelTitle.StartsWith("GS")  || parentParallelTitle.StartsWith("FG"));
+
+			return parentParallelTitle.StartsWith("FS") || parentParallelTitle.StartsWith("GS") || parentParallelTitle.StartsWith("FG");
 		}
 	}
 }

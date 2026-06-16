@@ -15,7 +15,7 @@ namespace SwissAcademic.Citavi.Citations
 		{
 			if (citation == null) return false;
 			if (citation.Reference == null) return false;
-			
+
 			//citation must be part of multiple citation
 			PlaceholderCitation placeholderCitation = citation as PlaceholderCitation;
 			if (placeholderCitation == null) return false;
@@ -26,18 +26,18 @@ namespace SwissAcademic.Citavi.Citations
 			PlaceholderCitation previousPlaceholderCitation = placeholderCitation.PreviousPlaceholderCitation;
 			if (previousPlaceholderCitation == null) return false;
 
-			
 			Reference thisReference = placeholderCitation.Reference;
 			Reference previousReference = previousPlaceholderCitation.Reference;
+			if (thisReference == null) return false;
 			if (previousReference == null) return false;
 
-			//Referenz muss dasselbe Aktenzeichen haben
-			string TitleSupplement = thisReference.TitleSupplement;
-			string SpecificField2 = previousReference.SpecificField2;
-			string SpecificField4 = previousReference.SpecificField4;
-			
-				if (!TitleSupplement.Equals(SpecificField2) || !TitleSupplement.Equals(SpecificField4)) return false;
-			
+			//Bestehende Logik bewusst beibehalten: Titelzusatz muss beiden Feldern entsprechen
+			string titleSupplement = thisReference.TitleSupplement;
+			string specificField2 = previousReference.SpecificField2;
+			string specificField4 = previousReference.SpecificField4;
+			if (titleSupplement == null) return false;
+
+			if (!titleSupplement.Equals(specificField2) || !titleSupplement.Equals(specificField4)) return false;
 
 			return true;
 		}

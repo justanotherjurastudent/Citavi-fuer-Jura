@@ -1,5 +1,5 @@
 // #C5_43233
-//Version 1.1
+//Version 1.2
 
 using System.Linq;
 using System.Collections.Generic;
@@ -18,32 +18,64 @@ namespace SwissAcademic.Citavi.Citations
 			if (citation == null) return false;
 			if (citation.Reference == null) return false;
 			if (citation.Reference.Periodical == null) return false;
-			
-			return 	citation.Reference.Periodical.Name.StartsWith("Bundestagsdrucksache") || 
-					citation.Reference.Periodical.Name.StartsWith("Bundestagplenar") ||
-					citation.Reference.Periodical.Name.StartsWith("Bundesratsdrucksache") || 
-					citation.Reference.Periodical.Name.StartsWith("Bundesratplenar") ||
-					citation.Reference.Periodical.Name.StartsWith("Deutscher Bundesrat Drucksache") || 
-					citation.Reference.Periodical.Name.StartsWith("Deutscher Bundestag Drucksache") || 
-					citation.Reference.Periodical.Name.StartsWith("BT-Dr") ||
-					citation.Reference.Periodical.Name.StartsWith("BT-Plenar") ||
-					citation.Reference.Periodical.Name.StartsWith("BR-Dr") ||
-					citation.Reference.Periodical.Name.StartsWith("BR-Plenar") ||
-					citation.Reference.Periodical.StandardAbbreviation.StartsWith("BT-Dr")  ||
-					citation.Reference.Periodical.StandardAbbreviation.StartsWith("BT-Plenar")  ||
-					citation.Reference.Periodical.StandardAbbreviation.StartsWith("BR-Dr") ||
-					citation.Reference.Periodical.StandardAbbreviation.StartsWith("BR-Plenar")  ||
-					citation.Reference.Periodical.StandardAbbreviation.Contains("StenBer")  ||
-					citation.Reference.Periodical.StandardAbbreviation.Contains("PP")  ||
-					citation.Reference.Periodical.Name.Contains("StenBer") ||
-					citation.Reference.Periodical.Name.Contains("Stenographischer Bericht") ||
-					citation.Reference.Periodical.Name.Contains("PP") ||
-					citation.Reference.Periodical.Name.EndsWith("protokoll") ||
-					//ab hier kommen die Landtagsdrucksachen
-					citation.Reference.Periodical.Name.EndsWith("Drucksache") ||	
-					citation.Reference.Periodical.Name.EndsWith("Drs.") || 
-					citation.Reference.Periodical.Name.EndsWith("Drucks.");
-					
+
+			var p = citation.Reference.Periodical;
+
+			return
+				MatchesName(p, "Bundestagsdrucksache") ||
+				MatchesName(p, "Bundestagplenar") ||
+				MatchesName(p, "Bundesratsdrucksache") ||
+				MatchesName(p, "Bundesratplenar") ||
+				MatchesName(p, "Deutscher Bundesrat Drucksache") ||
+				MatchesName(p, "Deutscher Bundestag Drucksache") ||
+				Matches(p, "BT-Dr") ||
+				Matches(p, "BT-Plenar") ||
+				Matches(p, "BR-Dr") ||
+				Matches(p, "BR-Plenar") ||
+				Contains(p, "StenBer") ||
+				Contains(p, "PP") ||
+				MatchesNameContains(p, "Stenographischer Bericht") ||
+				MatchesNameEndsWith(p, "protokoll") ||
+				MatchesNameEndsWith(p, "Drucksache") ||
+				MatchesNameEndsWith(p, "Drs.") ||
+				MatchesNameEndsWith(p, "Drucks.");
+		}
+
+		// Prueft Name und Standardabkuerzung null-sicher auf ein Praefix
+		private static bool Matches(Periodical p, string prefix)
+		{
+			return MatchesName(p, prefix) || MatchesAbbreviation(p, prefix);
+		}
+
+		// Prueft Name und Standardabkuerzung null-sicher auf einen enthaltenen Wert
+		private static bool Contains(Periodical p, string value)
+		{
+			return MatchesNameContains(p, value) || MatchesAbbreviationContains(p, value);
+		}
+
+		private static bool MatchesName(Periodical p, string prefix)
+		{
+			return p.Name != null && p.Name.StartsWith(prefix);
+		}
+
+		private static bool MatchesAbbreviation(Periodical p, string prefix)
+		{
+			return p.StandardAbbreviation != null && p.StandardAbbreviation.StartsWith(prefix);
+		}
+
+		private static bool MatchesNameContains(Periodical p, string value)
+		{
+			return p.Name != null && p.Name.Contains(value);
+		}
+
+		private static bool MatchesAbbreviationContains(Periodical p, string value)
+		{
+			return p.StandardAbbreviation != null && p.StandardAbbreviation.Contains(value);
+		}
+
+		private static bool MatchesNameEndsWith(Periodical p, string suffix)
+		{
+			return p.Name != null && p.Name.EndsWith(suffix);
 		}
 	}
 }

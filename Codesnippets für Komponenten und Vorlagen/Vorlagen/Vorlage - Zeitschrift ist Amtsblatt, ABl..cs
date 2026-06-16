@@ -1,5 +1,5 @@
 // #C5_43233
-//Version 1.1
+//Version 1.2
 
 using System.Linq;
 using System.Collections.Generic;
@@ -18,8 +18,14 @@ namespace SwissAcademic.Citavi.Citations
 			if (citation == null) return false;
 			if (citation.Reference == null) return false;
 			if (citation.Reference.Periodical == null) return false;
-			
-			return citation.Reference.Periodical.Name.StartsWith("Amtsblatt") || citation.Reference.Periodical.Name.StartsWith("ABl.");
+
+			var p = citation.Reference.Periodical;
+			return MatchesName(p, "Amtsblatt") || MatchesName(p, "ABl.");
+		}
+
+		private static bool MatchesName(Periodical p, string prefix)
+		{
+			return p.Name != null && p.Name.StartsWith(prefix);
 		}
 	}
 }
