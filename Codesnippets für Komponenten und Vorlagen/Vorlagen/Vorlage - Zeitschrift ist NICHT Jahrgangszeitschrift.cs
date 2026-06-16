@@ -1,5 +1,5 @@
 // #C5_43233_Abwandlumg
-//Version 1.1
+//Version 1.2
 
 using System.Linq;
 using System.Collections.Generic;
@@ -18,26 +18,46 @@ namespace SwissAcademic.Citavi.Citations
 			if (citation == null) return false;
 			if (citation.Reference == null) return false;
 			if (citation.Reference.Periodical == null) return false;
-			
-			return citation.Reference.Periodical.Name.StartsWith("JuristischeArbeitsblätter") || citation.Reference.Periodical.Name.StartsWith("Juristische Arbeitsblätter") || citation.Reference.Periodical.Name.StartsWith("JA") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("JA") || 
-			citation.Reference.Periodical.Name.StartsWith("JuristischeSchulung") || citation.Reference.Periodical.Name.StartsWith("Juristische Schulung") || citation.Reference.Periodical.Name.StartsWith("JuS") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("JuS") ||
-			citation.Reference.Periodical.Name.StartsWith("JuristischeAusbildung") || citation.Reference.Periodical.Name.StartsWith("Juristische Ausbildung") || citation.Reference.Periodical.Name.StartsWith("Jura") || citation.Reference.Periodical.Name.StartsWith("JURA") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("JURA") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("Jura") || 
-			citation.Reference.Periodical.Name.StartsWith("JuristenZeitung") || citation.Reference.Periodical.Name.StartsWith("Juristenzeitung") || citation.Reference.Periodical.Name.StartsWith("JZ") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("JZ") ||
-			citation.Reference.Periodical.Name.StartsWith("Juristische Rundschau") || citation.Reference.Periodical.Name.StartsWith("JuristischeRundschau") || citation.Reference.Periodical.Name.StartsWith("JR") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("JR") ||
-			citation.Reference.Periodical.Name.StartsWith("Medizinrecht") || citation.Reference.Periodical.Name.StartsWith("MedR") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("MedR") ||
-			citation.Reference.Periodical.Name.StartsWith("Monatsschrift für Deutsches Recht") || citation.Reference.Periodical.Name.StartsWith("MDR") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("MDR") ||
-			citation.Reference.Periodical.Name.StartsWith("Neue Juristische Wochenschrift") || citation.Reference.Periodical.Name.StartsWith("NeueJuristischeWochenschrift") || citation.Reference.Periodical.Name.StartsWith("NJW") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("NJW") ||
-			citation.Reference.Periodical.Name.StartsWith("Neue Zeitschrift für Strafrecht") || citation.Reference.Periodical.Name.StartsWith("NStZ") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("NStZ") ||
-			citation.Reference.Periodical.Name.StartsWith("Neue Zeitschrift für Strafrecht Rechtsprechungs-Report") || citation.Reference.Periodical.Name.StartsWith("NStZ-RR") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("NStZ-RR") ||
-			citation.Reference.Periodical.Name.StartsWith("Neue Zeitschrift für Verwaltungsrecht") || citation.Reference.Periodical.Name.StartsWith("NVwZ") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("NVwZ") ||
-			citation.Reference.Periodical.Name.StartsWith("Neue Juristische Online Zeitschrift") || citation.Reference.Periodical.Name.StartsWith("NJOZ") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("NJOZ") ||
-			citation.Reference.Periodical.Name.StartsWith("Kommunaljurist") || citation.Reference.Periodical.Name.StartsWith("KommJur") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("KommJur") ||
-			citation.Reference.Periodical.Name.StartsWith("Die Polizei") || 
-			citation.Reference.Periodical.Name.StartsWith("Rechtsmedizin") ||
-			citation.Reference.Periodical.Name.StartsWith("Strafverteidiger") || citation.Reference.Periodical.Name.StartsWith("StV") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("StV") ||
-			citation.Reference.Periodical.Name.StartsWith("Zeitschrift für das Juristische Studium") || citation.Reference.Periodical.Name.StartsWith("ZJS") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("ZJS") ||
-			citation.Reference.Periodical.Name.StartsWith("Kritische Justiz") || citation.Reference.Periodical.Name.StartsWith("KJ") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("KJ") ||
-			citation.Reference.Periodical.Name.StartsWith("Wohnungswirtschaft und Mietrecht") || citation.Reference.Periodical.Name.StartsWith("WuM") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("WuM");
+
+			var p = citation.Reference.Periodical;
+
+			return
+				Matches(p, "Juristische Arbeitsblätter", "JA") || MatchesName(p, "JuristischeArbeitsblätter") ||
+				Matches(p, "Juristische Schulung", "JuS") || MatchesName(p, "JuristischeSchulung") ||
+				Matches(p, "Juristische Ausbildung", "JURA") || MatchesName(p, "JuristischeAusbildung") ||
+				MatchesName(p, "Jura") || MatchesAbbreviation(p, "Jura") ||
+				Matches(p, "Juristenzeitung", "JZ") || MatchesName(p, "JuristenZeitung") ||
+				Matches(p, "Juristische Rundschau", "JR") || MatchesName(p, "JuristischeRundschau") ||
+				Matches(p, "Medizinrecht", "MedR") ||
+				Matches(p, "Monatsschrift für Deutsches Recht", "MDR") ||
+				Matches(p, "Neue Juristische Wochenschrift", "NJW") || MatchesName(p, "NeueJuristischeWochenschrift") ||
+				Matches(p, "Neue Zeitschrift für Strafrecht", "NStZ") ||
+				Matches(p, "Neue Zeitschrift für Strafrecht Rechtsprechungs-Report", "NStZ-RR") ||
+				Matches(p, "Neue Zeitschrift für Verwaltungsrecht", "NVwZ") ||
+				Matches(p, "Neue Juristische Online Zeitschrift", "NJOZ") ||
+				Matches(p, "Kommunaljurist", "KommJur") ||
+				MatchesName(p, "Die Polizei") ||
+				MatchesName(p, "Rechtsmedizin") ||
+				Matches(p, "Strafverteidiger", "StV") ||
+				Matches(p, "Zeitschrift für das Juristische Studium", "ZJS") ||
+				Matches(p, "Kritische Justiz", "KJ") ||
+				Matches(p, "Wohnungswirtschaft und Mietrecht", "WuM");
+		}
+
+		// Prueft, ob Name oder Abkuerzung mit dem jeweiligen Prefix beginnt (null-sicher)
+		private static bool Matches(Periodical p, string namePrefix, string abbreviationPrefix)
+		{
+			return MatchesName(p, namePrefix) || MatchesName(p, abbreviationPrefix) || MatchesAbbreviation(p, abbreviationPrefix);
+		}
+
+		private static bool MatchesName(Periodical p, string prefix)
+		{
+			return p.Name != null && p.Name.StartsWith(prefix);
+		}
+
+		private static bool MatchesAbbreviation(Periodical p, string prefix)
+		{
+			return p.StandardAbbreviation != null && p.StandardAbbreviation.StartsWith(prefix);
 		}
 	}
 }

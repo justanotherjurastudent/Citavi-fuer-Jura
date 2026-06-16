@@ -1,5 +1,5 @@
 // #C5_43233_Abwandlumg
-//Version 1.1
+//Version 1.2
 
 using System.Linq;
 using System.Collections.Generic;
@@ -18,22 +18,44 @@ namespace SwissAcademic.Citavi.Citations
 			if (citation == null) return false;
 			if (citation.Reference == null) return false;
 			if (citation.Reference.Periodical == null) return false;
-			
-			return citation.Reference.Periodical.Name.StartsWith("Archiv für die civilistische Praxis") || citation.Reference.Periodical.Name.StartsWith("AcP") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("AcP") || 
-			citation.Reference.Periodical.Name.StartsWith("Archiv für Kriminologie") || citation.Reference.Periodical.Name.StartsWith("ArchKrim") || citation.Reference.Periodical.Name.StartsWith("Arch. Krim") || citation.Reference.Periodical.Name.StartsWith("Arch Kriminol") || citation.Reference.Periodical.Name.StartsWith("Arch. Kriminol") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("Arch. Krim") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("ArchKrim") ||
-			citation.Reference.Periodical.Name.StartsWith("Archiv des öffentlichen Rechts") || citation.Reference.Periodical.Name.StartsWith("AöR") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("AöR") || 
-			citation.Reference.Periodical.Name.StartsWith("Archiv für Rechts- und Sozialphilosophie") || citation.Reference.Periodical.Name.StartsWith("ARSP") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("ARSP") ||
-			citation.Reference.Periodical.Name.StartsWith("Archiv für Urheber- und Medienrecht") || citation.Reference.Periodical.Name.StartsWith("UFITA") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("JR") ||
-			citation.Reference.Periodical.Name.StartsWith("Medizinrecht") || citation.Reference.Periodical.Name.StartsWith("MedR") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("UFITA") ||
-			citation.Reference.Periodical.Name.StartsWith("Blutalkohol") ||
-			citation.Reference.Periodical.Name.StartsWith("Monatsschrift für Kriminologie und Strafrechtsreform") || citation.Reference.Periodical.Name.StartsWith("MschrKrim") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("MschrKrim") ||
-			citation.Reference.Periodical.Name.StartsWith("Rabels Zeitschrift für ausländisches und internationales Privatrecht") || citation.Reference.Periodical.Name.StartsWith("RabelsZ") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("RabelsZ") ||
-			citation.Reference.Periodical.Name.StartsWith("Verwaltungsarchiv") || citation.Reference.Periodical.Name.StartsWith("VerwArch") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("VerwArch") ||
-			citation.Reference.Periodical.Name.StartsWith("Zeitschrift für ausländisches öffentliches Recht und Völkerrecht") || citation.Reference.Periodical.Name.StartsWith("ZaöRV") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("ZaöRV") ||
-			citation.Reference.Periodical.Name.StartsWith("Zeitschrift für das gesamte Handels- und Wirtschaftsrecht") || citation.Reference.Periodical.Name.StartsWith("ZHR") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("ZHR") ||
-			citation.Reference.Periodical.Name.StartsWith("Zeitschrift für die gesamte Strafrechtswissenschaft") || citation.Reference.Periodical.Name.StartsWith("ZStW") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("ZStW") ||
-			citation.Reference.Periodical.Name.StartsWith("Zeitschrift für Zivilproze") || citation.Reference.Periodical.Name.StartsWith("ZZP") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("ZZP");
-			
+
+			var p = citation.Reference.Periodical;
+
+			return
+				Matches(p, "Archiv für die civilistische Praxis", "AcP") ||
+				Matches(p, "Archiv für Kriminologie", "ArchKrim") ||
+				MatchesName(p, "Arch. Krim") || MatchesName(p, "Arch Kriminol") || MatchesName(p, "Arch. Kriminol") ||
+				MatchesAbbreviation(p, "Arch. Krim") || MatchesAbbreviation(p, "ArchKrim") ||
+				Matches(p, "Archiv des öffentlichen Rechts", "AöR") ||
+				Matches(p, "Archiv für Rechts- und Sozialphilosophie", "ARSP") ||
+				Matches(p, "Archiv für Urheber- und Medienrecht", "UFITA") ||
+				MatchesAbbreviation(p, "JR") ||
+				Matches(p, "Medizinrecht", "MedR") ||
+				MatchesAbbreviation(p, "UFITA") ||
+				MatchesName(p, "Blutalkohol") ||
+				Matches(p, "Monatsschrift für Kriminologie und Strafrechtsreform", "MschrKrim") ||
+				Matches(p, "Rabels Zeitschrift für ausländisches und internationales Privatrecht", "RabelsZ") ||
+				Matches(p, "Verwaltungsarchiv", "VerwArch") ||
+				Matches(p, "Zeitschrift für ausländisches öffentliches Recht und Völkerrecht", "ZaöRV") ||
+				Matches(p, "Zeitschrift für das gesamte Handels- und Wirtschaftsrecht", "ZHR") ||
+				Matches(p, "Zeitschrift für die gesamte Strafrechtswissenschaft", "ZStW") ||
+				Matches(p, "Zeitschrift für Zivilproze", "ZZP");
+		}
+
+		// Prueft, ob Name oder Abkuerzung mit dem jeweiligen Prefix beginnt (null-sicher)
+		private static bool Matches(Periodical p, string namePrefix, string abbreviationPrefix)
+		{
+			return MatchesName(p, namePrefix) || MatchesName(p, abbreviationPrefix) || MatchesAbbreviation(p, abbreviationPrefix);
+		}
+
+		private static bool MatchesName(Periodical p, string prefix)
+		{
+			return p.Name != null && p.Name.StartsWith(prefix);
+		}
+
+		private static bool MatchesAbbreviation(Periodical p, string prefix)
+		{
+			return p.StandardAbbreviation != null && p.StandardAbbreviation.StartsWith(prefix);
 		}
 	}
 }
