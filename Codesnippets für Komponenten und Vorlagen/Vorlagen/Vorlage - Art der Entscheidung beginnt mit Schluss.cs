@@ -1,5 +1,5 @@
 //#43234
-//Version 1.0
+//Version 1.1
 
 using System.Linq;
 using System.Collections.Generic;
@@ -17,8 +17,8 @@ namespace SwissAcademic.Citavi.Citations
 		{
 			if (citation == null) return false;
 			if (citation.Reference == null) return false;
-			
-			return citation.Reference.SpecificField3.StartsWith("Schluss");
+
+			return citation.Reference.SpecificField3 != null && citation.Reference.SpecificField3.StartsWith("Schluss");
 		}
 	}
 }

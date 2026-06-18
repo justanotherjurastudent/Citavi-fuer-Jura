@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<CitaviCitationStyle id="c0833bb6-550c-41e5-b0ca-c5cace92eb6a" citaviVersion="7.2.0.41">
+<CitaviCitationStyle id="c0833bb6-550c-41e5-b0ca-c5cace92eb6a" citaviVersion="7.3.1.30">
   <ContentVersion>65</ContentVersion>
   <SchemaVersion>6.0.0.4</SchemaVersion>
   <BuiltIn>false</BuiltIn>
   <CreatedOn>2013-04-29T18:21:29+02:00</CreatedOn>
   <CreatedBy>JHP</CreatedBy>
-  <ModifiedOn>2026-03-24T16:49:21</ModifiedOn>
+  <ModifiedOn>2026-06-18T17:14:06</ModifiedOn>
   <ModifiedBy>Lukas</ModifiedBy>
   <BasedOnStyleName />
   <Abbreviations />
@@ -38,8 +38,8 @@ Kontakt zum Ersteller des Stils:\par
   <AmbiguityResolving>AddFirstNames</AmbiguityResolving>
   <AmbiguityResolvingAddFirstNamesFirstNameFormat>Full</AmbiguityResolvingAddFirstNamesFirstNameFormat>
   <AmbiguityResolvingAddFirstNamesFontStyle behavior="SameAsPrevious" />
-  <AmbiguityResolvingAddFirstNamesMiddleNameFormat>Full</AmbiguityResolvingAddFirstNamesMiddleNameFormat>
-  <AmbiguityResolvingAddFirstNamesMiddleNameUsage>All</AmbiguityResolvingAddFirstNamesMiddleNameUsage>
+  <AmbiguityResolvingAddFirstNamesMiddleNameFormat>Abbreviated</AmbiguityResolvingAddFirstNamesMiddleNameFormat>
+  <AmbiguityResolvingAddFirstNamesMiddleNameUsage>None</AmbiguityResolvingAddFirstNamesMiddleNameUsage>
   <AmbiguityResolvingAddFirstNamesNameOrder>LastNameFirstName</AmbiguityResolvingAddFirstNamesNameOrder>
   <AppendIdentifyingLetterTo>Auto</AppendIdentifyingLetterTo>
   <AmbiguityResolvingShowAdditionalTemplateOptions>false</AmbiguityResolvingShowAdditionalTemplateOptions>
@@ -50,7 +50,7 @@ Kontakt zum Ersteller des Stils:\par
   <CitationFormatOption2Description />
   <CitationFormatOption3Name>3</CitationFormatOption3Name>
   <CitationFormatOption3Description />
-  <LastTemplateUseCase>ContributionInLegalCommentaryLegalCommentary</LastTemplateUseCase>
+  <LastTemplateUseCase>ContributionBookEdited</LastTemplateUseCase>
   <Replacements><![CDATA[!.|!|?.|?|...|…|..|.|….|…|. )|)|: ,|:|()||[]||( |(| )|)|;,|,|  | |, ,|, |) (|, |u. a.|u. a.]]></Replacements>
   <CustomTemplateConditions>
     <CustomTemplateCondition id="eb8659a4-b9e3-4900-91c8-5b6a2627bc14">
@@ -74,7 +74,7 @@ namespace SwissAcademic.Citavi.Citations
       <Name>Paralleltitel des Sammelwerks beginnt mit FS, GS oder FG</Name>
       <Notes />
       <Macro><![CDATA[// #C5_43236
-//Version 1.0
+//Version 1.1
 
 using System.Linq;
 using System.Collections.Generic;
@@ -93,10 +93,11 @@ namespace SwissAcademic.Citavi.Citations
 			if (citation == null) return false;
 			if (citation.Reference == null) return false;
 			if (citation.Reference.ParentReference == null) return false;
-			
+			if (citation.Reference.ParentReference.ParallelTitle == null) return false;
+
 			string parentParallelTitle = citation.Reference.ParentReference.ParallelTitle.ToUpperInvariant();
-			
-			return (parentParallelTitle.StartsWith("FS") || parentParallelTitle.StartsWith("GS")  || parentParallelTitle.StartsWith("FG"));
+
+			return parentParallelTitle.StartsWith("FS") || parentParallelTitle.StartsWith("GS") || parentParallelTitle.StartsWith("FG");
 		}
 	}
 }]]></Macro>
@@ -339,7 +340,7 @@ namespace SwissAcademic.Citavi.Citations
       <Name>Spezifischer Text 3 [Art der Entscheidung] beginnt mit "Schluss..."</Name>
       <Notes />
       <Macro><![CDATA[//#43234
-//Version 1.0
+//Version 1.1
 
 using System.Linq;
 using System.Collections.Generic;
@@ -357,12 +358,11 @@ namespace SwissAcademic.Citavi.Citations
 		{
 			if (citation == null) return false;
 			if (citation.Reference == null) return false;
-			
-			return citation.Reference.SpecificField3.StartsWith("Schluss");
+
+			return citation.Reference.SpecificField3 != null && citation.Reference.SpecificField3.StartsWith("Schluss");
 		}
 	}
-}
-]]></Macro>
+}]]></Macro>
     </CustomTemplateCondition>
     <CustomTemplateCondition id="46bf887c-d346-408e-819b-11f8c75f6111">
       <Name>Begründer Gesetzeskommentar ist leer</Name>
@@ -449,7 +449,7 @@ namespace SwissAcademic.Citavi.Citations
       <Name>Zeitschrift = BGBl, GVBl, BStBl, RGBl</Name>
       <Notes />
       <Macro><![CDATA[// #C5_43233
-//Version 1.1
+//Version 1.2
 
 using System.Linq;
 using System.Collections.Generic;
@@ -468,11 +468,30 @@ namespace SwissAcademic.Citavi.Citations
 			if (citation == null) return false;
 			if (citation.Reference == null) return false;
 			if (citation.Reference.Periodical == null) return false;
-			
-			return citation.Reference.Periodical.Name.StartsWith("Bundesgesetzblatt") || citation.Reference.Periodical.Name.StartsWith("BGBl") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("BGBl") ||
-				citation.Reference.Periodical.Name.StartsWith("Gesetz- und Verordnungsblatt") || citation.Reference.Periodical.Name.StartsWith("GVBl") ||
-				citation.Reference.Periodical.Name.StartsWith("Bundessteuerblatt") || citation.Reference.Periodical.Name.StartsWith("BStBl") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("BStBl") ||
-				citation.Reference.Periodical.Name.StartsWith("Reichsgesetzblatt") || citation.Reference.Periodical.Name.StartsWith("RGBl");
+
+			var p = citation.Reference.Periodical;
+
+			return
+				Matches(p, "Bundesgesetzblatt", "BGBl") ||
+				MatchesName(p, "Gesetz- und Verordnungsblatt") || MatchesName(p, "GVBl") ||
+				Matches(p, "Bundessteuerblatt", "BStBl") ||
+				MatchesName(p, "Reichsgesetzblatt") || MatchesName(p, "RGBl");
+		}
+
+		// Prueft Name und Standardabkuerzung null-sicher auf ein Praefix
+		private static bool Matches(Periodical p, string namePrefix, string abbreviationPrefix)
+		{
+			return MatchesName(p, namePrefix) || MatchesName(p, abbreviationPrefix) || MatchesAbbreviation(p, abbreviationPrefix);
+		}
+
+		private static bool MatchesName(Periodical p, string prefix)
+		{
+			return p.Name != null && p.Name.StartsWith(prefix);
+		}
+
+		private static bool MatchesAbbreviation(Periodical p, string prefix)
+		{
+			return p.StandardAbbreviation != null && p.StandardAbbreviation.StartsWith(prefix);
 		}
 	}
 }]]></Macro>
@@ -481,7 +500,7 @@ namespace SwissAcademic.Citavi.Citations
       <Name>Zeitschrift = Amtsblatt, ABl.</Name>
       <Notes />
       <Macro><![CDATA[// #C5_43233
-//Version 1.1
+//Version 1.2
 
 using System.Linq;
 using System.Collections.Generic;
@@ -500,8 +519,14 @@ namespace SwissAcademic.Citavi.Citations
 			if (citation == null) return false;
 			if (citation.Reference == null) return false;
 			if (citation.Reference.Periodical == null) return false;
-			
-			return citation.Reference.Periodical.Name.StartsWith("Amtsblatt") || citation.Reference.Periodical.Name.StartsWith("ABl.");
+
+			var p = citation.Reference.Periodical;
+			return MatchesName(p, "Amtsblatt") || MatchesName(p, "ABl.");
+		}
+
+		private static bool MatchesName(Periodical p, string prefix)
+		{
+			return p.Name != null && p.Name.StartsWith(prefix);
 		}
 	}
 }]]></Macro>
@@ -510,7 +535,7 @@ namespace SwissAcademic.Citavi.Citations
       <Name>Zeitschrift = Bundestagsdrucksache OR Bundesratsdrucksache OR Landtagsdrucksache OR Plenarprotokolle OR Stenographischer Bericht</Name>
       <Notes />
       <Macro><![CDATA[// #C5_43233
-//Version 1.1
+//Version 1.2
 
 using System.Linq;
 using System.Collections.Generic;
@@ -529,32 +554,64 @@ namespace SwissAcademic.Citavi.Citations
 			if (citation == null) return false;
 			if (citation.Reference == null) return false;
 			if (citation.Reference.Periodical == null) return false;
-			
-			return 	citation.Reference.Periodical.Name.StartsWith("Bundestagsdrucksache") || 
-					citation.Reference.Periodical.Name.StartsWith("Bundestagplenar") ||
-					citation.Reference.Periodical.Name.StartsWith("Bundesratsdrucksache") || 
-					citation.Reference.Periodical.Name.StartsWith("Bundesratplenar") ||
-					citation.Reference.Periodical.Name.StartsWith("Deutscher Bundesrat Drucksache") || 
-					citation.Reference.Periodical.Name.StartsWith("Deutscher Bundestag Drucksache") || 
-					citation.Reference.Periodical.Name.StartsWith("BT-Dr") ||
-					citation.Reference.Periodical.Name.StartsWith("BT-Plenar") ||
-					citation.Reference.Periodical.Name.StartsWith("BR-Dr") ||
-					citation.Reference.Periodical.Name.StartsWith("BR-Plenar") ||
-					citation.Reference.Periodical.StandardAbbreviation.StartsWith("BT-Dr")  ||
-					citation.Reference.Periodical.StandardAbbreviation.StartsWith("BT-Plenar")  ||
-					citation.Reference.Periodical.StandardAbbreviation.StartsWith("BR-Dr") ||
-					citation.Reference.Periodical.StandardAbbreviation.StartsWith("BR-Plenar")  ||
-					citation.Reference.Periodical.StandardAbbreviation.Contains("StenBer")  ||
-					citation.Reference.Periodical.StandardAbbreviation.Contains("PP")  ||
-					citation.Reference.Periodical.Name.Contains("StenBer") ||
-					citation.Reference.Periodical.Name.Contains("Stenographischer Bericht") ||
-					citation.Reference.Periodical.Name.Contains("PP") ||
-					citation.Reference.Periodical.Name.EndsWith("protokoll") ||
-					//ab hier kommen die Landtagsdrucksachen
-					citation.Reference.Periodical.Name.EndsWith("Drucksache") ||	
-					citation.Reference.Periodical.Name.EndsWith("Drs.") || 
-					citation.Reference.Periodical.Name.EndsWith("Drucks.");
-					
+
+			var p = citation.Reference.Periodical;
+
+			return
+				MatchesName(p, "Bundestagsdrucksache") ||
+				MatchesName(p, "Bundestagplenar") ||
+				MatchesName(p, "Bundesratsdrucksache") ||
+				MatchesName(p, "Bundesratplenar") ||
+				MatchesName(p, "Deutscher Bundesrat Drucksache") ||
+				MatchesName(p, "Deutscher Bundestag Drucksache") ||
+				Matches(p, "BT-Dr") ||
+				Matches(p, "BT-Plenar") ||
+				Matches(p, "BR-Dr") ||
+				Matches(p, "BR-Plenar") ||
+				Contains(p, "StenBer") ||
+				Contains(p, "PP") ||
+				MatchesNameContains(p, "Stenographischer Bericht") ||
+				MatchesNameEndsWith(p, "protokoll") ||
+				MatchesNameEndsWith(p, "Drucksache") ||
+				MatchesNameEndsWith(p, "Drs.") ||
+				MatchesNameEndsWith(p, "Drucks.");
+		}
+
+		// Prueft Name und Standardabkuerzung null-sicher auf ein Praefix
+		private static bool Matches(Periodical p, string prefix)
+		{
+			return MatchesName(p, prefix) || MatchesAbbreviation(p, prefix);
+		}
+
+		// Prueft Name und Standardabkuerzung null-sicher auf einen enthaltenen Wert
+		private static bool Contains(Periodical p, string value)
+		{
+			return MatchesNameContains(p, value) || MatchesAbbreviationContains(p, value);
+		}
+
+		private static bool MatchesName(Periodical p, string prefix)
+		{
+			return p.Name != null && p.Name.StartsWith(prefix);
+		}
+
+		private static bool MatchesAbbreviation(Periodical p, string prefix)
+		{
+			return p.StandardAbbreviation != null && p.StandardAbbreviation.StartsWith(prefix);
+		}
+
+		private static bool MatchesNameContains(Periodical p, string value)
+		{
+			return p.Name != null && p.Name.Contains(value);
+		}
+
+		private static bool MatchesAbbreviationContains(Periodical p, string value)
+		{
+			return p.StandardAbbreviation != null && p.StandardAbbreviation.Contains(value);
+		}
+
+		private static bool MatchesNameEndsWith(Periodical p, string suffix)
+		{
+			return p.Name != null && p.Name.EndsWith(suffix);
 		}
 	}
 }]]></Macro>
@@ -852,7 +909,7 @@ namespace SwissAcademic.Citavi.Citations
       <Name>Kurzbeleg fängt mit FS, GS oder FG an</Name>
       <Notes />
       <Macro><![CDATA[// #C5_43236
-//Version 1.0
+//Version 1.1
 
 using System.Linq;
 using System.Collections.Generic;
@@ -871,10 +928,11 @@ namespace SwissAcademic.Citavi.Citations
 			if (citation == null) return false;
 			if (citation.Reference == null) return false;
 			if (citation.Reference.ParentReference == null) return false;
-			
-			string CitationKey = citation.Reference.CitationKey.ToUpperInvariant();
-			
-			return (CitationKey.StartsWith("FS") || CitationKey.StartsWith("GS")  || CitationKey.StartsWith("FG"));
+			if (citation.Reference.CitationKey == null) return false;
+
+			string citationKey = citation.Reference.CitationKey.ToUpperInvariant();
+
+			return citationKey.StartsWith("FS") || citationKey.StartsWith("GS") || citationKey.StartsWith("FG");
 		}
 	}
 }]]></Macro>
@@ -1107,7 +1165,6 @@ namespace SwissAcademic.Citavi.Citations
 			if (citation == null) return false;
 			if (citation.Reference == null) return false;
 
-
 			//citation must be part of multiple citation
 			PlaceholderCitation placeholderCitation = citation as PlaceholderCitation;
 			if (placeholderCitation == null) return false;
@@ -1118,17 +1175,17 @@ namespace SwissAcademic.Citavi.Citations
 			PlaceholderCitation previousPlaceholderCitation = placeholderCitation.PreviousPlaceholderCitation;
 			if (previousPlaceholderCitation == null) return false;
 
-			
 			Reference thisReference = placeholderCitation.Reference;
 			Reference previousReference = previousPlaceholderCitation.Reference;
+			if (thisReference == null) return false;
 			if (previousReference == null) return false;
 
 			//Referenz muss dasselbe Aktenzeichen haben
-			string TitleSupplement = thisReference.TitleSupplement;
-			string CustomField1 = previousReference.CustomField1;
-			if (!TitleSupplement.Equals(CustomField1)) return false;
-			
-			return true;
+			string titleSupplement = thisReference.TitleSupplement;
+			string customField1 = previousReference.CustomField1;
+			if (titleSupplement == null) return false;
+
+			return titleSupplement.Equals(customField1);
 		}
 	}
 }]]></Macro>
@@ -1153,7 +1210,7 @@ namespace SwissAcademic.Citavi.Citations
 		{
 			if (citation == null) return false;
 			if (citation.Reference == null) return false;
-			
+
 			//citation must be part of multiple citation
 			PlaceholderCitation placeholderCitation = citation as PlaceholderCitation;
 			if (placeholderCitation == null) return false;
@@ -1164,18 +1221,18 @@ namespace SwissAcademic.Citavi.Citations
 			PlaceholderCitation previousPlaceholderCitation = placeholderCitation.PreviousPlaceholderCitation;
 			if (previousPlaceholderCitation == null) return false;
 
-			
 			Reference thisReference = placeholderCitation.Reference;
 			Reference previousReference = previousPlaceholderCitation.Reference;
+			if (thisReference == null) return false;
 			if (previousReference == null) return false;
 
 			//Referenz muss dasselbe Aktenzeichen haben
-			string TitleSupplement = thisReference.TitleSupplement;
-			string SpecificField2 = previousReference.SpecificField2;
-			string SpecificField4 = previousReference.SpecificField4;
-			
-				if (!TitleSupplement.Equals(SpecificField2) || !TitleSupplement.Equals(SpecificField4)) return false;
-			
+			string titleSupplement = thisReference.TitleSupplement;
+			string specificField2 = previousReference.SpecificField2;
+			string specificField4 = previousReference.SpecificField4;
+			if (titleSupplement == null) return false;
+
+			if (!titleSupplement.Equals(specificField2) || !titleSupplement.Equals(specificField4)) return false;
 
 			return true;
 		}
@@ -2007,7 +2064,7 @@ namespace SwissAcademic.Citavi.Citations
       <Name>Zeitschrift ist Jahrgangszeitschrift</Name>
       <Notes />
       <Macro><![CDATA[// #C5_43233_Abwandlumg
-//Version 1.1
+//Version 1.2
 
 using System.Linq;
 using System.Collections.Generic;
@@ -2026,22 +2083,44 @@ namespace SwissAcademic.Citavi.Citations
 			if (citation == null) return false;
 			if (citation.Reference == null) return false;
 			if (citation.Reference.Periodical == null) return false;
-			
-			return citation.Reference.Periodical.Name.StartsWith("Archiv für die civilistische Praxis") || citation.Reference.Periodical.Name.StartsWith("AcP") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("AcP") || 
-			citation.Reference.Periodical.Name.StartsWith("Archiv für Kriminologie") || citation.Reference.Periodical.Name.StartsWith("ArchKrim") || citation.Reference.Periodical.Name.StartsWith("Arch. Krim") || citation.Reference.Periodical.Name.StartsWith("Arch Kriminol") || citation.Reference.Periodical.Name.StartsWith("Arch. Kriminol") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("Arch. Krim") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("ArchKrim") ||
-			citation.Reference.Periodical.Name.StartsWith("Archiv des öffentlichen Rechts") || citation.Reference.Periodical.Name.StartsWith("AöR") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("AöR") || 
-			citation.Reference.Periodical.Name.StartsWith("Archiv für Rechts- und Sozialphilosophie") || citation.Reference.Periodical.Name.StartsWith("ARSP") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("ARSP") ||
-			citation.Reference.Periodical.Name.StartsWith("Archiv für Urheber- und Medienrecht") || citation.Reference.Periodical.Name.StartsWith("UFITA") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("JR") ||
-			citation.Reference.Periodical.Name.StartsWith("Medizinrecht") || citation.Reference.Periodical.Name.StartsWith("MedR") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("UFITA") ||
-			citation.Reference.Periodical.Name.StartsWith("Blutalkohol") ||
-			citation.Reference.Periodical.Name.StartsWith("Monatsschrift für Kriminologie und Strafrechtsreform") || citation.Reference.Periodical.Name.StartsWith("MschrKrim") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("MschrKrim") ||
-			citation.Reference.Periodical.Name.StartsWith("Rabels Zeitschrift für ausländisches und internationales Privatrecht") || citation.Reference.Periodical.Name.StartsWith("RabelsZ") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("RabelsZ") ||
-			citation.Reference.Periodical.Name.StartsWith("Verwaltungsarchiv") || citation.Reference.Periodical.Name.StartsWith("VerwArch") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("VerwArch") ||
-			citation.Reference.Periodical.Name.StartsWith("Zeitschrift für ausländisches öffentliches Recht und Völkerrecht") || citation.Reference.Periodical.Name.StartsWith("ZaöRV") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("ZaöRV") ||
-			citation.Reference.Periodical.Name.StartsWith("Zeitschrift für das gesamte Handels- und Wirtschaftsrecht") || citation.Reference.Periodical.Name.StartsWith("ZHR") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("ZHR") ||
-			citation.Reference.Periodical.Name.StartsWith("Zeitschrift für die gesamte Strafrechtswissenschaft") || citation.Reference.Periodical.Name.StartsWith("ZStW") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("ZStW") ||
-			citation.Reference.Periodical.Name.StartsWith("Zeitschrift für Zivilproze") || citation.Reference.Periodical.Name.StartsWith("ZZP") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("ZZP");
-			
+
+			var p = citation.Reference.Periodical;
+
+			return
+				Matches(p, "Archiv für die civilistische Praxis", "AcP") ||
+				Matches(p, "Archiv für Kriminologie", "ArchKrim") ||
+				MatchesName(p, "Arch. Krim") || MatchesName(p, "Arch Kriminol") || MatchesName(p, "Arch. Kriminol") ||
+				MatchesAbbreviation(p, "Arch. Krim") || MatchesAbbreviation(p, "ArchKrim") ||
+				Matches(p, "Archiv des öffentlichen Rechts", "AöR") ||
+				Matches(p, "Archiv für Rechts- und Sozialphilosophie", "ARSP") ||
+				Matches(p, "Archiv für Urheber- und Medienrecht", "UFITA") ||
+				MatchesAbbreviation(p, "JR") ||
+				Matches(p, "Medizinrecht", "MedR") ||
+				MatchesAbbreviation(p, "UFITA") ||
+				MatchesName(p, "Blutalkohol") ||
+				Matches(p, "Monatsschrift für Kriminologie und Strafrechtsreform", "MschrKrim") ||
+				Matches(p, "Rabels Zeitschrift für ausländisches und internationales Privatrecht", "RabelsZ") ||
+				Matches(p, "Verwaltungsarchiv", "VerwArch") ||
+				Matches(p, "Zeitschrift für ausländisches öffentliches Recht und Völkerrecht", "ZaöRV") ||
+				Matches(p, "Zeitschrift für das gesamte Handels- und Wirtschaftsrecht", "ZHR") ||
+				Matches(p, "Zeitschrift für die gesamte Strafrechtswissenschaft", "ZStW") ||
+				Matches(p, "Zeitschrift für Zivilproze", "ZZP");
+		}
+
+		// Prueft, ob Name oder Abkuerzung mit dem jeweiligen Prefix beginnt (null-sicher)
+		private static bool Matches(Periodical p, string namePrefix, string abbreviationPrefix)
+		{
+			return MatchesName(p, namePrefix) || MatchesName(p, abbreviationPrefix) || MatchesAbbreviation(p, abbreviationPrefix);
+		}
+
+		private static bool MatchesName(Periodical p, string prefix)
+		{
+			return p.Name != null && p.Name.StartsWith(prefix);
+		}
+
+		private static bool MatchesAbbreviation(Periodical p, string prefix)
+		{
+			return p.StandardAbbreviation != null && p.StandardAbbreviation.StartsWith(prefix);
 		}
 	}
 }]]></Macro>
@@ -9873,7 +9952,7 @@ namespace SwissAcademic.Citavi.Citations
         }	
     }
 }]]></FilterCode>
-      <IsFilterActivated>true</IsFilterActivated>
+      <IsFilterActivated>false</IsFilterActivated>
       <FilterName>CPS012 Show first name if last names are identical for different persons v3.5 - disambiguatePrimaryAuthorsOnly = false</FilterName>
       <FilterNotes />
       <Name>{0} [nur Nachname] (Hrsg.)</Name>
@@ -45844,7 +45923,7 @@ namespace SwissAcademic.Citavi.Citations
 			bool disambiguatePrimaryAuthorsOnly = false;
 			
 			//When a first and/or middle name is added for disambiguation, should that be before or after the last name?
-            PersonNameOrder nameOrderForAmbiguityResolution = PersonNameOrder.FirstNameLastName;
+            PersonNameOrder nameOrderForAmbiguityResolution = PersonNameOrder.LastNameFirstName;
 			
 			//In case of ambiguous last names, should the disambiguation happen by adding full first names or just the initials?
             NameFormat firstNameFormatForAmbiguityResolution = NameFormat.Abbreviated; 
@@ -45855,12 +45934,12 @@ namespace SwissAcademic.Citavi.Citations
 			//NameFormat.Compact				JM
 			
 			//Should the middle name(s) be added for disambiguation?
-			MiddleNameUsage middleNameUsageForAmbiguityResolution = MiddleNameUsage.All;
+			MiddleNameUsage middleNameUsageForAmbiguityResolution = MiddleNameUsage.None;
 			//MiddleNameUsage.FirstOnly
 			//MiddleNameUsage.All
 			
 			//In case of ambiguous last names, should disambiguation happen by adding full middle names or just the initials?
-			NameFormat middleNameFormatForAmbiguityResolution = NameFormat.Full;
+			NameFormat middleNameFormatForAmbiguityResolution = NameFormat.Abbreviated;
 			
 			
             handled = false;
@@ -45900,7 +45979,7 @@ namespace SwissAcademic.Citavi.Citations
         }	
     }
 }]]></FilterCode>
-      <IsFilterActivated>true</IsFilterActivated>
+      <IsFilterActivated>false</IsFilterActivated>
       <FilterName>CPS012 Show first name if last names are identical for different persons v3.5 - disambiguatePrimaryAuthorsOnly = false</FilterName>
       <FilterNotes />
       <Name>{0} (nur Nachname)</Name>
@@ -48204,10 +48283,10 @@ namespace SwissAcademic.Citavi.Comparers
                 </ComponentParts>
               </Template>
               <Conditions>
-                <BuiltInCondition>SamePageInPublicationAsPrevious</BuiltInCondition>
                 <BuiltInCondition>SameReferenceAsPrevious</BuiltInCondition>
-                <BuiltInCondition>InFootnotePreviousAndCurrentAreInConsecutiveFootnotes</BuiltInCondition>
+                <BuiltInCondition>SamePageInPublicationAsPrevious</BuiltInCondition>
                 <BuiltInCondition>PreviousReferenceIsNotPartOfMultipleCitation</BuiltInCondition>
+                <BuiltInCondition>InFootnotePreviousAndCurrentAreInConsecutiveFootnotes</BuiltInCondition>
                 <CustomCondition>40d4a7a0-90d3-4e3f-b97e-05525c6104bb</CustomCondition>
                 <CustomCondition>142c2859-0c79-4319-a232-f9440a1d72fa</CustomCondition>
               </Conditions>
@@ -48341,8 +48420,8 @@ namespace SwissAcademic.Citavi.Comparers
                 <Notes />
                 <ComponentParts>
                   <ComponentPart refid="14dfb2e0-2a1e-4d1d-a297-ac2e8a04058e" />
-                  <ComponentPart refid="6a760dcd-9d4d-4683-b4e6-c397e5bb62f3" />
                   <ComponentPart refid="deaf452f-aa88-41ad-9ab8-0e654db9e16b" />
+                  <ComponentPart refid="6a760dcd-9d4d-4683-b4e6-c397e5bb62f3" />
                   <ComponentPart refid="1b213410-070b-4caa-b238-bbd140837416" />
                   <ComponentPart refid="9cd546fb-02ef-4822-ac7d-83f4d77239c5" />
                 </ComponentParts>
@@ -48999,10 +49078,10 @@ namespace SwissAcademic.Citavi.Comparers
                 </ComponentParts>
               </Template>
               <Conditions>
-                <BuiltInCondition>VolumeMissing</BuiltInCondition>
                 <BuiltInCondition>YearMissing</BuiltInCondition>
-                <BuiltInCondition>PeriodicalMissing</BuiltInCondition>
+                <BuiltInCondition>VolumeMissing</BuiltInCondition>
                 <BuiltInCondition>NumberMissing</BuiltInCondition>
+                <BuiltInCondition>PeriodicalMissing</BuiltInCondition>
               </Conditions>
             </Template>
             <Template type="Conditional">

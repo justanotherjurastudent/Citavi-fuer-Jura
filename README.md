@@ -86,6 +86,12 @@ kannst du mich gerne unter der E-Mail-Adresse auf meinem Blog erreichen.
 - Zwei Vorlagen wurden für Gesetzeskommentar im Set Literaturverzeichnis hinzugefügt, um mehr Fälle mit Loseblatt und Begründerwerke abzudecken.
 - Vorlage im Set Literaturverzeichnis von Internetdokument wurde entfernt, wo eine DOI statt Internetadresse ausgegeben wurde. Grund: Fehlende einheitliche Benutzung der DOI in anderen Dokumententypen.
 
+---
+### Version 2.2.3
+- In vielen Vorlagenbedingungen, wo nach Wortanfängen gesucht wurde, sind nun weitere Null-Checks vorhanden, welche Abstürze verhindern sollen. Auch wurden diese Bedingungen teilweise aufgeräumt.
+- Beim Herausgaber wurde der Komponentenfilter deaktiviert, welche bei Mehrdeutigkeit des Nachnamens Vor- und Mittelnamen hinzugefügt hat.
+- Beim Beitrag im Sammelwerk wurde der Herausgeber in der Standardvorlage der Fußnote vor das ", in:" gesetzt. Das war ein Fauxpas und ist nun behoben.  
+
 
 > [!TIP]
 > Für die detaillierte Anleitung zur Benutzung meines Zitierstils [besuche meinen Blog](https://blogs.urz.uni-halle.de/simpletricks/2022/10/der-citavi-stil-fuer-jura/).
