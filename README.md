@@ -92,6 +92,13 @@ kannst du mich gerne unter der E-Mail-Adresse auf meinem Blog erreichen.
 - Beim Herausgaber wurde der Komponentenfilter deaktiviert, welche bei Mehrdeutigkeit des Nachnamens Vor- und Mittelnamen hinzugefügt hat.
 - Beim Beitrag im Sammelwerk wurde der Herausgeber in der Standardvorlage der Fußnote vor das ", in:" gesetzt. Das war ein Fauxpas und ist nun behoben.  
 
+---
+### Version 2.2.4
+- Zeitschriften: Wenn im Zitatseitenfeld ein Seitenbereich angegeben wurde, der mit der Startseite des Artikels anfängt, wurde das Zitatseitenfeld vorher unterdrückt. Das passiert nun nicht mehr.
+- Gerichtsentscheidungen: Bei einem Mehrfachnachweis mit zwei aufeinanderfolgenden Entscheidungen, die in derselben Fundstelle veröffentlich wurden, wurde die Fundstelle auch bei unterschiedlichen Gerichten nicht mehr ausgegeben. Das wurde gefixt, sodass nur noch dann die Fundstellenausgabe unterdrückt wird, wenn das Gericht und die Fundstelle identisch sind.
+- Bei Gesetzeskommentaren mit Begründer war im Literaturverzeichnis die Auflagen-Angabe vor der Herausgeber-Angabe. Nun ist sie wieder hinter den Herausgebern.
+- Bei Gesetzeskommentaren ohne übliche Abkürzung wurde u. U. in dem Literaturverzeichnis nicht der Herausgeber in der Zitierangabe angegeben. Der Herausgeber wird jetzt wieder in der Zitierangabe vor dem Titel des Werkes genannt, um ein leichteres Auffinden im LV zu ermöglichen.
+- In den Fußnotenvorlagen des Gesetzeskommentars wurde aufgeräumt, insbesondere bei den Bandnummern und -titeln.
 
 > [!TIP]
 > Für die detaillierte Anleitung zur Benutzung meines Zitierstils [besuche meinen Blog](https://blogs.urz.uni-halle.de/simpletricks/2022/10/der-citavi-stil-fuer-jura/).
