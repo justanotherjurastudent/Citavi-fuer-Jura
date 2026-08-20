@@ -23,8 +23,9 @@ namespace SwissAcademic.Citavi.Citations
 			//note: if you do not specify the whole word, but rather its first characters, do NOT use * as a wildcard, but
 			//\\w*, which means "zero or more word characters"
 			var wordList1 = new string[] {
-				"Festschrift", 
-				"Gedenkschrift" 
+				"Festschrift",
+				"Festgabe",
+				"Gedenkschrift"
 			};
 
 			var regEx = new Regex(@"\b(" + string.Join("|", wordList1) + @")\b", RegexOptions.IgnoreCase);
