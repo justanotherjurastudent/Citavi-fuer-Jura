@@ -65,7 +65,9 @@ namespace SwissAcademic.Citavi.Citations
 	{
 		public bool IsTemplateForReference(ConditionalTemplate template, Citation envelope)
 		{
-			return string.IsNullOrEmpty(envelope.Reference.Edition);
+			return envelope != null &&
+				envelope.Reference != null &&
+				string.IsNullOrEmpty(envelope.Reference.Edition);
 		}
 	}
 }]]></Macro>
@@ -1089,25 +1091,37 @@ namespace SwissAcademic.Citavi.Citations
 			if (citation.Reference == null) return false;
 			if (citation.Reference.Periodical == null) return false;
 			
-			return citation.Reference.Periodical.Name.StartsWith("JuristischeArbeitsblätter") || citation.Reference.Periodical.Name.StartsWith("Juristische Arbeitsblätter") || citation.Reference.Periodical.Name.StartsWith("JA") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("JA") || 
-			citation.Reference.Periodical.Name.StartsWith("JuristischeSchulung") || citation.Reference.Periodical.Name.StartsWith("Juristische Schulung") || citation.Reference.Periodical.Name.StartsWith("JuS") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("JuS") ||
-			citation.Reference.Periodical.Name.StartsWith("JuristischeAusbildung") || citation.Reference.Periodical.Name.StartsWith("Juristische Ausbildung") || citation.Reference.Periodical.Name.StartsWith("Jura") || citation.Reference.Periodical.Name.StartsWith("JURA") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("JURA") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("Jura") || 
-			citation.Reference.Periodical.Name.StartsWith("JuristenZeitung") || citation.Reference.Periodical.Name.StartsWith("Juristenzeitung") || citation.Reference.Periodical.Name.StartsWith("JZ") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("JZ") ||
-			citation.Reference.Periodical.Name.StartsWith("Juristische Rundschau") || citation.Reference.Periodical.Name.StartsWith("JuristischeRundschau") || citation.Reference.Periodical.Name.StartsWith("JR") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("JR") ||
-			citation.Reference.Periodical.Name.StartsWith("Medizinrecht") || citation.Reference.Periodical.Name.StartsWith("MedR") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("MedR") ||
-			citation.Reference.Periodical.Name.StartsWith("Monatsschrift für Deutsches Recht") || citation.Reference.Periodical.Name.StartsWith("MDR") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("MDR") ||
-			citation.Reference.Periodical.Name.StartsWith("Neue Juristische Wochenschrift") || citation.Reference.Periodical.Name.StartsWith("NeueJuristischeWochenschrift") || citation.Reference.Periodical.Name.StartsWith("NJW") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("NJW") ||
-			citation.Reference.Periodical.Name.StartsWith("Neue Zeitschrift für Strafrecht") || citation.Reference.Periodical.Name.StartsWith("NStZ") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("NStZ") ||
-			citation.Reference.Periodical.Name.StartsWith("Neue Zeitschrift für Strafrecht Rechtsprechungs-Report") || citation.Reference.Periodical.Name.StartsWith("NStZ-RR") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("NStZ-RR") ||
-			citation.Reference.Periodical.Name.StartsWith("Neue Zeitschrift für Verwaltungsrecht") || citation.Reference.Periodical.Name.StartsWith("NVwZ") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("NVwZ") ||
-			citation.Reference.Periodical.Name.StartsWith("Neue Juristische Online Zeitschrift") || citation.Reference.Periodical.Name.StartsWith("NJOZ") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("NJOZ") ||
-			citation.Reference.Periodical.Name.StartsWith("Kommunaljurist") || citation.Reference.Periodical.Name.StartsWith("KommJur") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("KommJur") ||
-			citation.Reference.Periodical.Name.StartsWith("Die Polizei") || 
-			citation.Reference.Periodical.Name.StartsWith("Rechtsmedizin") ||
-			citation.Reference.Periodical.Name.StartsWith("Strafverteidiger") || citation.Reference.Periodical.Name.StartsWith("StV") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("StV") ||
-			citation.Reference.Periodical.Name.StartsWith("Zeitschrift für das Juristische Studium") || citation.Reference.Periodical.Name.StartsWith("ZJS") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("ZJS") ||
-			citation.Reference.Periodical.Name.StartsWith("Kritische Justiz") || citation.Reference.Periodical.Name.StartsWith("KJ") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("KJ") ||
-			citation.Reference.Periodical.Name.StartsWith("Wohnungswirtschaft und Mietrecht") || citation.Reference.Periodical.Name.StartsWith("WuM") || citation.Reference.Periodical.StandardAbbreviation.StartsWith("WuM");
+			var p = citation.Reference.Periodical;
+			
+			return MatchesName(p, "JuristischeArbeitsblätter") || MatchesName(p, "Juristische Arbeitsblätter") || MatchesName(p, "JA") || MatchesAbbreviation(p, "JA") || 
+			MatchesName(p, "JuristischeSchulung") || MatchesName(p, "Juristische Schulung") || MatchesName(p, "JuS") || MatchesAbbreviation(p, "JuS") ||
+			MatchesName(p, "JuristischeAusbildung") || MatchesName(p, "Juristische Ausbildung") || MatchesName(p, "Jura") || MatchesName(p, "JURA") || MatchesAbbreviation(p, "JURA") || MatchesAbbreviation(p, "Jura") || 
+			MatchesName(p, "JuristenZeitung") || MatchesName(p, "Juristenzeitung") || MatchesName(p, "JZ") || MatchesAbbreviation(p, "JZ") ||
+			MatchesName(p, "Juristische Rundschau") || MatchesName(p, "JuristischeRundschau") || MatchesName(p, "JR") || MatchesAbbreviation(p, "JR") ||
+			MatchesName(p, "Medizinrecht") || MatchesName(p, "MedR") || MatchesAbbreviation(p, "MedR") ||
+			MatchesName(p, "Monatsschrift für Deutsches Recht") || MatchesName(p, "MDR") || MatchesAbbreviation(p, "MDR") ||
+			MatchesName(p, "Neue Juristische Wochenschrift") || MatchesName(p, "NeueJuristischeWochenschrift") || MatchesName(p, "NJW") || MatchesAbbreviation(p, "NJW") ||
+			MatchesName(p, "Neue Zeitschrift für Strafrecht") || MatchesName(p, "NStZ") || MatchesAbbreviation(p, "NStZ") ||
+			MatchesName(p, "Neue Zeitschrift für Strafrecht Rechtsprechungs-Report") || MatchesName(p, "NStZ-RR") || MatchesAbbreviation(p, "NStZ-RR") ||
+			MatchesName(p, "Neue Zeitschrift für Verwaltungsrecht") || MatchesName(p, "NVwZ") || MatchesAbbreviation(p, "NVwZ") ||
+			MatchesName(p, "Neue Juristische Online Zeitschrift") || MatchesName(p, "NJOZ") || MatchesAbbreviation(p, "NJOZ") ||
+			MatchesName(p, "Kommunaljurist") || MatchesName(p, "KommJur") || MatchesAbbreviation(p, "KommJur") ||
+			MatchesName(p, "Die Polizei") || 
+			MatchesName(p, "Rechtsmedizin") ||
+			MatchesName(p, "Strafverteidiger") || MatchesName(p, "StV") || MatchesAbbreviation(p, "StV") ||
+			MatchesName(p, "Zeitschrift für das Juristische Studium") || MatchesName(p, "ZJS") || MatchesAbbreviation(p, "ZJS") ||
+			MatchesName(p, "Kritische Justiz") || MatchesName(p, "KJ") || MatchesAbbreviation(p, "KJ") ||
+			MatchesName(p, "Wohnungswirtschaft und Mietrecht") || MatchesName(p, "WuM") || MatchesAbbreviation(p, "WuM");
+		}
+		
+		private static bool MatchesName(Periodical p, string prefix)
+		{
+			return p.Name != null && p.Name.StartsWith(prefix);
+		}
+		
+		private static bool MatchesAbbreviation(Periodical p, string prefix)
+		{
+			return p.StandardAbbreviation != null && p.StandardAbbreviation.StartsWith(prefix);
 		}
 	}
 }]]></Macro>
@@ -2172,7 +2186,9 @@ namespace SwissAcademic.Citavi.Citations
 	{
 		public bool IsTemplateForReference(ConditionalTemplate template, Citation envelope)
 		{
-			return !string.IsNullOrEmpty(envelope.Reference.Edition);
+			return envelope != null &&
+				envelope.Reference != null &&
+				!string.IsNullOrEmpty(envelope.Reference.Edition);
 		}
 	}
 }]]></Macro>
@@ -5332,12 +5348,12 @@ namespace SwissAcademic.Citavi.Citations
 			string language = string.Empty;
 			if (componentPart.Scope == ComponentPartScope.Reference)
 			{
-				language = reference.Language.ToUpperInvariant();
+				language = (reference.Language ?? string.Empty).ToUpperInvariant();
 			}
 			else if (componentPart.Scope == ComponentPartScope.ParentReference)
 			{
 				if (parentReference == null) return null;
-				language = parentReference.Language.ToUpperInvariant();				
+				language = (parentReference.Language ?? string.Empty).ToUpperInvariant();				
 			}
 			
 			if (string.IsNullOrEmpty(language)) return null;
@@ -6565,12 +6581,12 @@ namespace SwissAcademic.Citavi.Citations
 			string language = string.Empty;
 			if (componentPart.Scope == ComponentPartScope.Reference)
 			{
-				language = reference.Language.ToUpperInvariant();
+				language = (reference.Language ?? string.Empty).ToUpperInvariant();
 			}
 			else if (componentPart.Scope == ComponentPartScope.ParentReference)
 			{
 				if (parentReference == null) return null;
-				language = parentReference.Language.ToUpperInvariant();				
+				language = (parentReference.Language ?? string.Empty).ToUpperInvariant();				
 			}
 			
 			if (string.IsNullOrEmpty(language)) return null;
@@ -13515,14 +13531,14 @@ namespace SwissAcademic.Citavi.Citations
         {
             if (componentPart.Scope == ComponentPartScope.Reference)
             {
-                return citation.Reference.Language.ToUpperInvariant();
+                return (citation.Reference.Language ?? string.Empty).ToUpperInvariant();
             }
 
             if (componentPart.Scope == ComponentPartScope.ParentReference)
             {
                 var parentReference = citation.Reference.ParentReference;
                 if (parentReference == null) return string.Empty;
-                return parentReference.Language.ToUpperInvariant();
+                return (parentReference.Language ?? string.Empty).ToUpperInvariant();
             }
 
             return string.Empty;
@@ -21624,12 +21640,12 @@ namespace SwissAcademic.Citavi.Citations
 			string language = string.Empty;
 			if (componentPart.Scope == ComponentPartScope.Reference)
 			{
-				language = reference.Language.ToUpperInvariant();
+				language = (reference.Language ?? string.Empty).ToUpperInvariant();
 			}
 			else if (componentPart.Scope == ComponentPartScope.ParentReference)
 			{
 				if (parentReference == null) return null;
-				language = parentReference.Language.ToUpperInvariant();				
+				language = (parentReference.Language ?? string.Empty).ToUpperInvariant();				
 			}
 			
 			if (string.IsNullOrEmpty(language)) return null;
@@ -24895,12 +24911,12 @@ namespace SwissAcademic.Citavi.Citations
             {
                 string language = string.Empty;
                 if (componentPart.Scope == ComponentPartScope.Reference)
-                    language = citation.Reference.Language.ToUpperInvariant();
+                    language = (citation.Reference.Language ?? string.Empty).ToUpperInvariant();
                 else if (componentPart.Scope == ComponentPartScope.ParentReference)
                 {
                     var parentReference = citation.Reference.ParentReference;
                     if (parentReference == null) return null;
-                    language = parentReference.Language.ToUpperInvariant();
+                    language = (parentReference.Language ?? string.Empty).ToUpperInvariant();
                 }
 
                 if (string.IsNullOrEmpty(language)) return null;
@@ -32047,12 +32063,12 @@ namespace SwissAcademic.Citavi.Citations
             {
                 string language = string.Empty;
                 if (componentPart.Scope == ComponentPartScope.Reference)
-                    language = citation.Reference.Language.ToUpperInvariant();
+                    language = (citation.Reference.Language ?? string.Empty).ToUpperInvariant();
                 else if (componentPart.Scope == ComponentPartScope.ParentReference)
                 {
                     var parentReference = citation.Reference.ParentReference;
                     if (parentReference == null) return null;
-                    language = parentReference.Language.ToUpperInvariant();
+                    language = (parentReference.Language ?? string.Empty).ToUpperInvariant();
                 }
 
                 if (string.IsNullOrEmpty(language)) return null;
@@ -34998,12 +35014,12 @@ namespace SwissAcademic.Citavi.Citations
             {
                 string language = string.Empty;
                 if (componentPart.Scope == ComponentPartScope.Reference)
-                    language = citation.Reference.Language.ToUpperInvariant();
+                    language = (citation.Reference.Language ?? string.Empty).ToUpperInvariant();
                 else if (componentPart.Scope == ComponentPartScope.ParentReference)
                 {
                     var parentReference = citation.Reference.ParentReference;
                     if (parentReference == null) return null;
-                    language = parentReference.Language.ToUpperInvariant();
+                    language = (parentReference.Language ?? string.Empty).ToUpperInvariant();
                 }
 
                 if (string.IsNullOrEmpty(language)) return null;

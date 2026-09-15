@@ -34,12 +34,12 @@ namespace SwissAcademic.Citavi.Citations
 			string language = string.Empty;
 			if (componentPart.Scope == ComponentPartScope.Reference)
 			{
-				language = reference.Language.ToUpperInvariant();
+				language = (reference.Language ?? string.Empty).ToUpperInvariant();
 			}
 			else if (componentPart.Scope == ComponentPartScope.ParentReference)
 			{
 				if (parentReference == null) return null;
-				language = parentReference.Language.ToUpperInvariant();				
+				language = (parentReference.Language ?? string.Empty).ToUpperInvariant();				
 			}
 			
 			if (string.IsNullOrEmpty(language)) return null;
