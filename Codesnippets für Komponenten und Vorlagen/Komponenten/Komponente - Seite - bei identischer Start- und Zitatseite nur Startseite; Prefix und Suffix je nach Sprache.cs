@@ -75,14 +75,14 @@ namespace SwissAcademic.Citavi.Citations
         {
             if (componentPart.Scope == ComponentPartScope.Reference)
             {
-                return citation.Reference.Language.ToUpperInvariant();
+                return (citation.Reference.Language ?? string.Empty).ToUpperInvariant();
             }
 
             if (componentPart.Scope == ComponentPartScope.ParentReference)
             {
                 var parentReference = citation.Reference.ParentReference;
                 if (parentReference == null) return string.Empty;
-                return parentReference.Language.ToUpperInvariant();
+                return (parentReference.Language ?? string.Empty).ToUpperInvariant();
             }
 
             return string.Empty;

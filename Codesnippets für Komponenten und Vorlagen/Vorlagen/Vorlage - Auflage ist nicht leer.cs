@@ -7,7 +7,9 @@ namespace SwissAcademic.Citavi.Citations
 	{
 		public bool IsTemplateForReference(ConditionalTemplate template, Citation envelope)
 		{
-			return !string.IsNullOrEmpty(envelope.Reference.Edition);
+			return envelope != null &&
+				envelope.Reference != null &&
+				!string.IsNullOrEmpty(envelope.Reference.Edition);
 		}
 	}
 }
